@@ -40,6 +40,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; helpers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'org)
+
 (defun first (list)
   (car list))
 
@@ -130,6 +132,7 @@
                 (lambda () (pop stack))
               (lambda () (push node stack)))
    do (dotimes (i (abs level-diff))
+	(ignore i)
         (funcall op))))
 
 (defun make-entry-tree-from-buffer ()
@@ -196,7 +199,7 @@
   ;; Fold all content, only show heading
   (org-global-cycle 0)
   ;; Go to the heading that covers that line
-  (goto-line line)
+  (forward-line line)
   ;; Fold all headings
   (org-shifttab)
   ;; Open the current heading
@@ -211,22 +214,23 @@
 (defun find-entry ()
   (interactive)
   ;; Get the path from the user
-  (setq map (make-entry-tree-from-buffer)
-        node entry-node-root
-        path '()
-        running t)
-  (while running
-    (let* ((prompt  (concat "Find entry: " (entry-path-to-string (reverse path)) "/"))
-           (children (cons node (entry-tree-get-children map node)))
-           (options-map (mapcar (lambda (n) (cons (entry-node-title n) (entry-node-id n))) children))
-           ;; Replace current node title with "."
-           (options-map (cons (cons "." (cdar options-map)) (cdr options-map)))
-           (options-text (mapcar #'car options-map))
-           (choice  (ido-completing-read prompt options-text))
-           (choice (car (entry-tree-find-id map (alist-get choice options-map)))))
-      (setq running (and (entry-tree-parentp map choice) (not (equal node choice)))
-            node choice
-            path (cons node path))))
+  
+  (let ((map (make-entry-tree-from-buffer))
+        (node entry-node-root)
+        (path '())
+        (running t))
+    (while running
+      (let* ((prompt  (concat "Find entry: " (entry-path-to-string (reverse path)) "/"))
+             (children (cons node (entry-tree-get-children map node)))
+             (options-map (mapcar (lambda (n) (cons (entry-node-title n) (entry-node-id n))) children))
+             ;; Replace current node title with "."
+             (options-map (cons (cons "." (cdar options-map)) (cdr options-map)))
+             (options-text (mapcar #'car options-map))
+             (choice  (ido-completing-read prompt options-text))
+             (choice (car (entry-tree-find-id map (alist-get choice options-map)))))
+	(setq running (and (entry-tree-parentp map choice) (not (equal node choice)))
+              node choice
+              path (cons node path)))))
   (when (not (equal node entry-node-root))
     (fe--goto-node node)))
 
