@@ -1,0 +1,2 @@
+* find-entry
+Navigate org documents with minimal keystrokes like you would navigate a fileystem with IDO.
