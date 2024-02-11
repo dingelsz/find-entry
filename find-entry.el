@@ -215,7 +215,6 @@
 (defun find-entry ()
   (interactive)
   ;; Get the path from the user
-  
   (let ((map (make-entry-tree-from-buffer))
         (node entry-node-root)
         (path '())
@@ -231,9 +230,9 @@
              (choice (car (entry-tree-find-id map (alist-get choice options-map)))))
 	(setq running (and (entry-tree-parentp map choice) (not (equal node choice)))
               node choice
-              path (cons node path)))))
-  (when (not (equal node entry-node-root))
-    (fe--goto-node node)))
+              path (cons node path))))
+    (when (not (equal node entry-node-root))
+      (fe--goto-node node))))
 
 (provide 'find-entry)
 ;;; find-entry.el ends here
