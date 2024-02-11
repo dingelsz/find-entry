@@ -2,6 +2,6 @@
 Navigate org documents with minimal keystrokes like you would navigate a fileystem with IDO.
 
 * Demo
-[[file:demo.gif][Demo]]
+#+html: <p align="center"><img src="demo.gif" /></p>
 
 
